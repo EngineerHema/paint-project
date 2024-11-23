@@ -1,7 +1,7 @@
 # New updates:
 
 In the project directory, the front-end is updated adding features like drawing a rectangle and filling its colour,
-*This is only the base of our work*
+***`This is only the base of our work`***
 
 ### `npm start`
 
