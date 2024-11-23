@@ -1,0 +1,30 @@
+.tool-bar{
+    min-width: 1vh;
+    min-height: 20px;
+    position: fixed;  
+    top: 0; 
+    background-color: white;
+    padding: 5px;
+    margin: 5px;
+    margin-top: 0px;
+    border: 2px double;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3,22px); /*button size*/
+    row-gap: 5px;
+    justify-content: left;
+    
+}
+
+
+button{
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+}
+
+button:hover{
+    cursor: pointer;
+}
