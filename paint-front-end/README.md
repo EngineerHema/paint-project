@@ -1,10 +1,7 @@
-# Getting Started with Create React App
+# New updates:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
+In the project directory, the front-end is updated adding features like drawing a rectangle and filling its colour,
+*This is only the base of our work*
 
 ### `npm start`
 
