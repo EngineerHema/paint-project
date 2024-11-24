@@ -1,9 +1,16 @@
 import React, {  useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
 
-import Rectangle from "./rectangle";
+import shapeFactory from "./shapeFactory";
 
-export default function Portrait({bgColour}) {
+// const availableShapes = {   // more shapes to be added
+//   Rectangle:'Rectangle',
+//   Circle:'Circle'
+// }
+
+const factory = new shapeFactory();
+
+export default function Portrait({bgColour, shapeType}) {
 
   const stageRef = useRef();
   const dimensions = useRef(null);
@@ -14,6 +21,7 @@ export default function Portrait({bgColour}) {
 
   const onPointerDown = () => {
     const stage = stageRef.current;
+    if(!shapeType?.current) return;
     const { x, y } = stage.getPointerPosition();
     dimensions.current = { x1:x, y1:y, x2:x, y2:y };
     console.log(dimensions.current)
@@ -27,13 +35,13 @@ export default function Portrait({bgColour}) {
     dimensions.current = {  ...dimensions.current, x2: x, y2: y };
 
     console.log(dimensions.current)
-    setCurrentShape(<Rectangle dimension={dimensions.current} bgColour={bgColour}/>);
+    setCurrentShape(factory.createShape(shapeType?.current, dimensions.current, bgColour));
   };
 
   const onPointerUp = () => {
     if (currentShape!==null) {
-      setShapes([...shapes, currentShape]); // Finalize the rectangle
-      setCurrentShape(null); // Reset current rectangle
+      setShapes([...shapes, currentShape]); // Finalize the RectangleShape
+      setCurrentShape(null); // Reset current RectangleShape
       dimensions.current = null;
     }
   };

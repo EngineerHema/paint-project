@@ -1,14 +1,15 @@
 import { Rect } from "react-konva";
 
-export default function Rectangle({dimension, bgColour}){
+export default function RectangleShape({dimension, bgColour}){
     const newShape = {
         x: dimension.x1,
         y: dimension.y1,
         width: dimension.x2-dimension.x1,
         height: dimension.y2-dimension.y1,
-        Fill: bgColour,
+        Fill: bgColour.current,
         stroke:"black",
-        strokeWidth:2
+        strokeWidth:2,
+        draggable : true
       };
 
       return(

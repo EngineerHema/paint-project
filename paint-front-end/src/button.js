@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Button({ colour, index, setBgColour}) {
+function Button({ colour, index, bgColour}) {
     const [isHovered, setIsHovered] = useState(false); //Only to add shadow effect on buttons
     
     const onMouseEnter =()=>{
@@ -12,7 +12,7 @@ function Button({ colour, index, setBgColour}) {
     }
 
     const changeColour =()=>{
-        setBgColour(colour)
+        bgColour.current=colour;
     }
 
     return (
