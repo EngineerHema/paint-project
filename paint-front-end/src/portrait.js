@@ -1,45 +1,45 @@
-import React, { useRef, useState } from "react";
-import { Stage, Layer, Rect } from "react-konva";
+import React, {  useRef, useState } from "react";
+import { Stage, Layer } from "react-konva";
 
-export default function Portrait({bgColour, setBgColour}) {
+import Rectangle from "./rectangle";
+
+export default function Portrait({bgColour}) {
 
   const stageRef = useRef();
+  const dimensions = useRef(null);
   const [shapes, setShapes] = useState([]);
   const [currentShape, setCurrentShape] = useState(null);
+
+
 
   const onPointerDown = () => {
     const stage = stageRef.current;
     const { x, y } = stage.getPointerPosition();
-    setCurrentShape({ x, y, width: 0, height: 0 });
+    dimensions.current = { x1:x, y1:y, x2:x, y2:y };
+    console.log(dimensions.current)
   };
 
   const onPointerMove = () => {
-    if (!currentShape) return;
+    if (!dimensions?.current) return;
 
     const stage = stageRef.current;
     const { x, y } = stage.getPointerPosition();
-    const { x: startX, y: startY } = currentShape;
+    dimensions.current = {  ...dimensions.current, x2: x, y2: y };
 
-    // Update rectangle dimensions
-    const newShape = {
-      x: startX,
-      y: startY,
-      width: x - startX,
-      height: y - startY,
-      bgColour: bgColour
-    };
-
-    setCurrentShape(newShape);
+    console.log(dimensions.current)
+    setCurrentShape(<Rectangle dimension={dimensions.current} bgColour={bgColour}/>);
   };
 
   const onPointerUp = () => {
-    if (currentShape) {
+    if (currentShape!==null) {
       setShapes([...shapes, currentShape]); // Finalize the rectangle
       setCurrentShape(null); // Reset current rectangle
+      dimensions.current = null;
     }
   };
 
   return (
+    <div className="portrait">
     <Stage
       ref={stageRef}
       width={window.innerWidth}
@@ -51,31 +51,15 @@ export default function Portrait({bgColour, setBgColour}) {
       <Layer>
         {/* Render finalized shapes */}
         {shapes.map((shape, i) => (
-          <Rect
-            key={i}
-            x={shape.x}
-            y={shape.y}
-            width={shape.width}
-            height={shape.height}
-            fill={shape.bgColour}
-            stroke="black"
-            strokeWidth={2}
-          />
+          shape
         ))}
 
         {/* Render the shapeangle being drawn */}
-        {currentShape && (
-          <Rect
-            x={currentShape.x}
-            y={currentShape.y}
-            width={currentShape.width}
-            height={currentShape.height}
-            fill={bgColour}
-            stroke="black"
-            strokeWidth={2}
-          />
+        {currentShape!==null && (
+          currentShape
         )}
       </Layer>
     </Stage>
+    </div>
   );
 }

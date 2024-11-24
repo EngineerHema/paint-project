@@ -16,7 +16,7 @@ export default function ToolBar({bgColour, setBgColour}){
     return(
         <div className='tool-bar' draggable = 'True'>
             {Colours.map((colour, index) => (
-            <Button colour={colour} index={index}
+            <Button colour={colour} index={index} key = {index}
             bgColour={bgColour} setBgColour={setBgColour}/>
         ))}
 
