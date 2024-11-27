@@ -4,7 +4,9 @@ import Button from './button';
 const shapes = [
    null,
   'Rectangle',
-  'Circle'
+  'Circle',
+  'Line'
+  
 ];
 
 const Colours = [
@@ -13,7 +15,7 @@ const Colours = [
   "blue",
   "yellow",
   "white",
-  "black"
+  "black",
 ];
 
 export default function ToolBar({ bgColour, shapeType }) {

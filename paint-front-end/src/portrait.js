@@ -23,7 +23,11 @@ export default function Portrait({bgColour, shapeType}) {
     const stage = stageRef.current;
     if(!shapeType?.current) return;
     const { x, y } = stage.getPointerPosition();
-    dimensions.current = { x1:x, y1:y, x2:x, y2:y };
+    if (shapeType.current === "Line") {
+      dimensions.current = { points: [x, y] };    
+    } else {
+      dimensions.current = { x1: x, y1: y, x2: x, y2: y };
+    }
     console.log(dimensions.current)
   };
 
@@ -32,7 +36,13 @@ export default function Portrait({bgColour, shapeType}) {
 
     const stage = stageRef.current;
     const { x, y } = stage.getPointerPosition();
-    dimensions.current = {  ...dimensions.current, x2: x, y2: y };
+    if (shapeType.current === "Line") {
+      dimensions.current = {
+        points: [...dimensions.current.points, x, y],//to store all points 
+      };
+    } else {
+      dimensions.current = { ...dimensions.current, x2: x, y2: y };
+    }
 
     console.log(dimensions.current)
     setCurrentShape(factory.createShape(shapeType?.current, dimensions.current, bgColour));
