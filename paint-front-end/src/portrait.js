@@ -1,5 +1,5 @@
-import React, {  useRef, useState } from "react";
-import { Stage, Layer } from "react-konva";
+import React, {  useRef, useState ,useEffect} from "react";
+import { Stage, Layer ,Transformer} from "react-konva";
 
 import shapeFactory from "./shapeFactory";
 
@@ -16,6 +16,9 @@ export default function Portrait({bgColour, shapeType}) {
   const dimensions = useRef(null);
   const [shapes, setShapes] = useState([]);
   const [currentShape, setCurrentShape] = useState(null);
+  const [selectedShape, setSelectedShape] = useState(null);  
+  const transformerRef = useRef(); 
+  
 
 
 
@@ -45,7 +48,7 @@ export default function Portrait({bgColour, shapeType}) {
     }
 
     console.log(dimensions.current)
-    setCurrentShape(factory.createShape(shapeType?.current, dimensions.current, bgColour));
+    setCurrentShape(factory.createShape(shapeType?.current, dimensions.current, bgColour,(e) => handleShapeClick(e.target)));
   };
 
   const onPointerUp = () => {
@@ -55,6 +58,15 @@ export default function Portrait({bgColour, shapeType}) {
       dimensions.current = null;
     }
   };
+  const handleShapeClick = (node) => {
+    setSelectedShape(node); 
+  };
+  useEffect(() => {
+    if (selectedShape && transformerRef.current) {
+      transformerRef.current.nodes([selectedShape]);
+      transformerRef.current.getLayer().batchDraw();
+    }
+  }, [selectedShape]);
 
   return (
     <div className="portrait">
@@ -76,6 +88,7 @@ export default function Portrait({bgColour, shapeType}) {
         {currentShape!==null && (
           currentShape
         )}
+         <Transformer ref={transformerRef} />
       </Layer>
     </Stage>
     </div>

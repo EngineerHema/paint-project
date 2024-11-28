@@ -1,6 +1,6 @@
 import { Circle } from "react-konva";
 
-export default function CircleShape({dimension, bgColour}){
+export default function CircleShape({dimension, bgColour, handleShapeClick}){
     
     const dx = dimension.x2 - dimension.x1;
     const dy = dimension.y2 - dimension.y1;
@@ -18,7 +18,7 @@ export default function CircleShape({dimension, bgColour}){
       return(
         <Circle
         {...newShape}
-
+        onClick={handleShapeClick}
       />
       );
 }

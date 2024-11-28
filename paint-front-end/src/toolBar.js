@@ -5,7 +5,8 @@ const shapes = [
    null,
   'Rectangle',
   'Circle',
-  'Line'
+  'Line',
+  'Straight line',
   
 ];
 
