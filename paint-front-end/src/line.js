@@ -8,7 +8,7 @@ export default function LineShape({dimensions, bgColour,handleShapeClick}){
         strokeWidth: 2,
         lineCap: "round", 
         lineJoin: "round", 
-        draggable: true,
+  
       };
       return(
         <Line

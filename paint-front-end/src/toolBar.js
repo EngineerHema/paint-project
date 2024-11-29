@@ -2,7 +2,7 @@ import './toolBar.css';
 import Button from './button';
 
 const shapes = [
-   null,
+ null,
   'Rectangle',
   'Circle',
   'Line',

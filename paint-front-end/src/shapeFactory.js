@@ -4,10 +4,10 @@ import LineShape from "./line";
 import StraightLineShape from "./straightLine";
 
 class ShapeFactory {
-  createShape(type, dimensions, bgColour,handleShapeClick) {
+  createShape(type, dimensions, bgColour,handleShapeClick ) {
     switch (type) {
       case 'Rectangle':
-        return <RectangleShape dimension={dimensions} bgColour={bgColour} handleShapeClick={handleShapeClick}/>;
+        return <RectangleShape dimension={dimensions} bgColour={bgColour} handleShapeClick={handleShapeClick} />;
       case 'Circle':
         return <CircleShape dimension={dimensions} bgColour={bgColour}handleShapeClick={handleShapeClick} />;
       case 'Line':
@@ -18,6 +18,8 @@ class ShapeFactory {
         return null;
     }
   }
+  
 }
+
 
 export default ShapeFactory;

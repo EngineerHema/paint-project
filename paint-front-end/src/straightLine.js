@@ -10,9 +10,6 @@ export default function StraightLineShape({dimensions, bgColour, handleShapeClic
         strokeWidth: 2,
         lineCap: "round",
         lineJoin: "round",
-        draggable: true,
-       
-        
     };
 
     return (
