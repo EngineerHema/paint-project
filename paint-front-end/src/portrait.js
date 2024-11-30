@@ -1,12 +1,15 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Stage, Layer, Transformer } from "react-konva";
 import shapeFactory from "./shapeFactory";
-import ShapePrototype from "./shapePrototype";
+import Prototype from "./prototype";
 import Konva from 'konva';
+
+
+import { v4 as uuidv4 } from 'uuid';
 
 // Create a factory instance
 const factory = new shapeFactory();
-const prototype = new ShapePrototype();
+const prototype = new Prototype();
 
 export default function Portrait({ bgColour, shapeType }) {
   const stageRef = useRef();
@@ -50,7 +53,7 @@ export default function Portrait({ bgColour, shapeType }) {
     }
 
     setCurrentShape(
-      factory.createShape(shapeType?.current, dimensions.current, bgColour, (e) => handleShapeClick(e.target))
+      factory.createShape(shapeType?.current, dimensions.current, bgColour, (e) => handleShapeClick(e.target), uuidv4())
     );
   };
 
@@ -68,23 +71,11 @@ export default function Portrait({ bgColour, shapeType }) {
   };
   //for copy , cut , past  //////////////////////////////////////
   const handleCopy = () => {
-    console.log("copy")
    console.log(selectedShape);
     if (selectedShape) {
-      const type = selectedShape.attrs.type || selectedShape.getClassName();
-      const shapeProps = selectedShape.attrs; 
-      console.log(type)
-      setCopiedShape({
-        type: type,
-        dimension: {
-          x1: shapeProps.x,
-          y1: shapeProps.y,
-          x2: shapeProps.z ,
-          y2: shapeProps.w ,
-        },
-        bgColour: { current: shapeProps.fill },
-        handleShapeClick, 
-      });
+      setCopiedShape(
+        {...selectedShape.attrs}
+      );
       setSelectedShape(null)
     }
   };
@@ -95,13 +86,17 @@ export default function Portrait({ bgColour, shapeType }) {
     }
   };
   const handlePaste = () => {
-  if (copiedShape) {
+    console.log(copiedShape)
+    if (copiedShape) {
 
-    const stage =stageRef.current;
-    const {x,y}=stage.getPointerPosition();
-    const newShape =  prototype.cloneShape(copiedShape,x,y, (e) => handleShapeClick(e.target));
-   
-    setShapes([...shapes,newShape]);
+      const stage =stageRef.current;
+      const {x,y}=stage.getPointerPosition(); 
+      const newShape = prototype.clone(copiedShape?.type,copiedShape, x, y, (e) => handleShapeClick(e.target), uuidv4);
+      ;
+      
+
+
+      setShapes([...shapes, newShape]);
   }
 };
   ////////////////////////////////////////////
@@ -153,7 +148,7 @@ export default function Portrait({ bgColour, shapeType }) {
         <Layer>
     {shapes.map((shape, i) => {
       // Make sure each shape is a valid Konva element
-      return shape
+      return <React.Fragment key={i}>{shape}</React.Fragment>
     })}
 
           {currentShape && React.cloneElement(currentShape, { draggable: false })}
