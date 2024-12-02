@@ -1,4 +1,5 @@
 import { Rect } from "react-konva";
+import { useEffect } from 'react';
 
 export default function RectangleShape({ dimension, bgColour, handleShapeClick, id, handleCreateShape}) {
 
@@ -30,5 +31,5 @@ export default function RectangleShape({ dimension, bgColour, handleShapeClick, 
     handleCreateShape(shapeNode); // Pass the Konva node to handleCreateShape
   };
 
-  return <Rect {...newShape} onClick={handleShapeClick} onPointerUp={onPointerUp} />;
+  return <Rect {...newShape} onClick={handleShapeClick} onPointerUp={onPointerUp}/>;
 }

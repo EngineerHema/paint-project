@@ -15,6 +15,7 @@ export default function RectanglePrototype({shape, newX, newY, handleShapeClick,
         <Rect
         {...newShape}
         onClick={handleShapeClick}
+        
       />
       );
 }

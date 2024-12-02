@@ -20,6 +20,8 @@ export default function Portrait({ bgColour, shapeType }) {
   const [shapes, setShapes] = useState([]);
   const [currentShape, setCurrentShape] = useState(null);
   const [selectedShape, setSelectedShape] = useState(null);
+  const [filePath, setFilePath] = useState('');
+
  
 
   const onPointerDown = (e) => {
@@ -106,7 +108,7 @@ const handleCreateShape = async (shapeNode) => {
 };
 
 const handleDelete = async () => {
-  const shapeId = selectedShape.attrs.id
+  const shapeId = selectedShape?.attrs?.id;
 
   if (!shapeId) {
     alert("Please enter a shape ID to delete.");
@@ -148,6 +150,83 @@ const handleDelete = async () => {
 };
 
 
+const undo = async () => {
+  const prevShapes = shapes;
+  try {
+    setShapes([]);
+
+    const response = await fetch("http://localhost:8080/shapes/undo", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      
+      const updatedShapes = data.map(shape =>
+        prototype.clone(shape?.type, shape, shape.x, shape.y, (e) => handleShapeClick(e.target), shape.id)
+      );
+      
+      // Update the shapes state
+      setShapes(updatedShapes);
+      console.log("Undo successful!");
+    } else {
+      // If the response is not ok, revert to previous shapes
+      setShapes(prevShapes);
+      alert("Failed to undo action.");
+    }
+  } catch (error) {
+    // In case of an error, revert to previous shapes
+    setShapes(prevShapes);
+    console.error("Error during undo:", error);
+    alert("Error during undo operation.");
+  }
+
+  setSelectedShape(null); // Reset selected shape after undo
+};
+
+
+const redo = async () => {
+  const prevShapes = shapes;
+  try {
+    setShapes([]);
+
+    const response = await fetch("http://localhost:8080/shapes/redo", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      
+      const updatedShapes = data.map(shape =>
+        prototype.clone(shape?.type, shape, shape.x, shape.y, (e) => handleShapeClick(e.target), shape.id)
+      );
+      
+      // Update the shapes state
+      setShapes(updatedShapes);
+      console.log("redo successful!");
+    } else {
+      // If the response is not ok, revert to previous shapes
+      setShapes(prevShapes);
+      alert("Failed to redo action.");
+    }
+  } catch (error) {
+    // In case of an error, revert to previous shapes
+    setShapes(prevShapes);
+    console.error("Error during redo:", error);
+    alert("Error during undo operation.");
+  }
+
+  setSelectedShape(null); // Reset selected shape after undo
+};
+
+
+
   const handleShapeClick = (node) => {
     console.log('Shape clicked:', node);
     setSelectedShape(node); 
@@ -185,19 +264,190 @@ const handleDelete = async () => {
       setShapes([...shapes, newShape]);
   }
 };
+
+
+
+
+const saveFile = async (format) => {
+  if (!format) {
+    console.error('Invalid format:', format);
+    return;
+  }
+
+  try {
+    const fileHandle = await window.showSaveFilePicker({
+      suggestedName: `shapes.${format}`,
+      types: [
+        {
+          description: format === 'json' ? 'JSON Files' : 'XML Files',
+          accept: {
+            [format === 'json' ? 'application/json' : 'application/xml']: [`.${format}`]
+          }
+        }
+      ]
+    });
+
+    const writable = await fileHandle.createWritable();
+
+    if (format === 'json') {
+      // Fetch JSON data from backend
+      const response = await fetch("http://localhost:8080/shapes/saveString", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Fetched JSON data:", data);
+        
+        // Convert JSON data to a string and write to the file
+        const jsonData = JSON.stringify(data, null, 2);
+        await writable.write(jsonData);
+      } else {
+        console.error("Failed to fetch JSON data.");
+      }
+    } else if (format === 'xml') {
+      // Generate XML data from shapes
+      let xmlData = '<?xml version="1.0" encoding="UTF-8"?>\n<shapes>\n';
+
+      shapes.forEach((shape) => {
+        xmlData += `  <shape type="${shape.type}" color="${shape.color}">\n`;
+      
+        // Handle circle type
+        if (shape.type === 'circle') {
+          xmlData += `    <x>${shape.x}</x>\n    <y>${shape.y}</y>\n    <radius>${shape.radius}</radius>\n`;
+        }
+        // Handle rectangle type
+        else if (shape.type === 'rectangle') {
+          xmlData += `    <x>${shape.x}</x>\n    <y>${shape.y}</y>\n    <width>${shape.width}</width>\n    <height>${shape.height}</height>\n`;
+        }
+        // Handle line type
+        else if (shape.type === 'line') {
+          xmlData += `    <x1>${shape.x1}</x1>\n    <y1>${shape.y1}</y1>\n    <x2>${shape.x2}</x2>\n    <y2>${shape.y2}</y2>\n`;
+        }
+        // Handle ellipse type
+        else if (shape.type === 'ellipse') {
+          xmlData += `    <cx>${shape.cx}</cx>\n    <cy>${shape.cy}</cy>\n    <rx>${shape.rx}</rx>\n    <ry>${shape.ry}</ry>\n`;
+        }
+        // Handle square type (which is a rectangle with equal width and height)
+        else if (shape.type === 'square') {
+          xmlData += `    <x>${shape.x}</x>\n    <y>${shape.y}</y>\n    <side>${shape.side}</side>\n`;
+        }
+        // Handle triangle type
+        else if (shape.type === 'triangle') {
+          xmlData += `    <x1>${shape.x1}</x1>\n    <y1>${shape.y1}</y1>\n    <x2>${shape.x2}</x2>\n    <y2>${shape.y2}</y2>\n    <x3>${shape.x3}</x3>\n    <y3>${shape.y3}</y3>\n`;
+        }
+        // Handle straight line type
+        else if (shape.type === 'straight-line') {
+          xmlData += `    <x1>${shape.x1}</x1>\n    <y1>${shape.y1}</y1>\n    <x2>${shape.x2}</x2>\n    <y2>${shape.y2}</y2>\n`;
+        }
+      
+        xmlData += '  </shape>\n';
+      });
+      
+      xmlData += '</shapes>';
+      
+      await writable.write(xmlData);
+      
+    }
+
+    await writable.close();
+    alert(`Shapes saved as ${format.toUpperCase()}!`);
+    setFilePath(`File saved to: ${fileHandle.name}`);
+  } catch (error) {
+    console.error(`Error saving shapes as ${format.toUpperCase()}:`, error);
+    setFilePath('Error saving file');
+  }
+};
+
+
+const load = async (format) => {
+  if (!format) {
+    console.error('Invalid format:', format);
+    return;
+  }
+
+  try {
+    // Open file picker
+    const fileHandle = await window.showOpenFilePicker({
+      types: [
+        {
+          description: format === 'json' ? 'JSON Files' : 'XML Files',
+          accept: {
+            [format === 'json' ? 'application/json' : 'application/xml']: [`.${format}`]
+          }
+        }
+      ]
+    });
+
+    // Get the file from the handle
+    const file = await fileHandle[0].getFile();
+    const text = await file.text();
+
+    if (format === 'json') {
+      // Parse JSON data
+      const jsonData = JSON.parse(text);
+      console.log('Loaded JSON data:', jsonData);
+      
+      const updatedShapes = jsonData.map(shape =>{
+        return prototype.clone(shape?.type, shape, shape.x, shape.y, (e) => handleShapeClick(e.target), shape.id)
+    });
+      console.log(updatedShapes);
+      // Update the shapes state
+      setShapes(updatedShapes);
+      
+
+      
+      
+      // You can now use the jsonData in your application
+    } 
+
+  } catch (error) {
+    console.error('Error loading file:', error);
+  }
+};
+
+
+
+
   ////////////////////////////////////////////
   useEffect(() => {
-    if (selectedShape &&  transformerRef.current && shapeType.current === "_MODE_") {
+    if (selectedShape && transformerRef.current && shapeType.current === "_MODE_") {
       transformerRef.current.nodes([selectedShape]); // Apply transformer to selected shape
       transformerRef.current.getLayer().batchDraw();
       selectedShape.draggable(true);
+  
+     
+      selectedShape.on('dragend', () => {
+        console.log('Drag finished');
+        handleCreateShape(selectedShape); // Handle the shape after drag ends
+      });
+
+      selectedShape.on('transformend', () => {
+        console.log('Editing finished');
+        handleCreateShape(selectedShape);
+
+      });
     } else if (transformerRef.current) {
       transformerRef.current.nodes([]); 
       transformerRef.current.getLayer().batchDraw();
-      if (selectedShape) selectedShape.draggable(false);
+      if (selectedShape){
+        selectedShape.draggable(false);
+        handleCreateShape(selectedShape);
+      }
     } else if (shapeType.current !== "_MODE_") {
       selectedShape && selectedShape.draggable(false);
     }
+  
+    // Cleanup the event listener when the component is unmounted or when selectedShape changes
+    return () => {
+      if (selectedShape) {
+        selectedShape.off('transformend');
+      }
+    };
+  
   }, [selectedShape, shapeType]);
 
  //////////////////////////////////////////////////
@@ -205,18 +455,31 @@ const handleDelete = async () => {
   const handleKeyDown = (e) => {
     
     if (e.key === "Delete") { 
-      handleDelete();
+      handleDelete(selectedShape);
     }
     
-    else if (e.ctrlKey) {
+    if (e.ctrlKey) {
       if (e.key === "c") { 
         handleCopy();
       } else if (e.key === "x") { 
         handleCut();
       } else if (e.key === "v") { 
         handlePaste();
+      } else if (e.key === "m") {
+        redo();
+      } else if (e.key === "z") {
+        undo();
+      }else if (e.key === "s") {
+        e.preventDefault();
+        saveFile("json");
+      }else if (e.key === "l") {
+        e.preventDefault();
+        load("json");
       }
-      
+    }
+    else if  (e.altKey && e.key === 's'){
+      e.preventDefault();
+      saveFile("xml");
     }
   };
   window.addEventListener("keydown", handleKeyDown);
