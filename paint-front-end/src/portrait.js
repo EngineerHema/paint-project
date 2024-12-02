@@ -73,10 +73,6 @@ const onPointerUp = () => {
     setShapes((prevShapes) => [...prevShapes, currentShape]);
     console.log(currentShape)
 
-    // Send shape data to the backend
-    //handleCreateShape(currentShape); // Pass the Konva node to backend
-
-    // Reset current shape and dimensions for the next shape
     setCurrentShape(null);
     dimensions.current = null;
   }
