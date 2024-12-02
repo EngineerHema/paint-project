@@ -1,0 +1,13 @@
+[ {
+  "type" : "rectangle",
+  "length" : "555",
+  "width" : "555",
+  "color" : "iohboi",
+  "id" : "11"
+}, {
+  "type" : "rectangle",
+  "length" : "777",
+  "width" : "7777",
+  "color" : "zena",
+  "id" : "33"
+} ]
