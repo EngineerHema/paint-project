@@ -3,10 +3,13 @@ import Button from './button';
 
 const shapes = [
  null,
-  'Rectangle',
-  'Circle',
-  'Line',
-  'Straight line',
+ 'Rectangle',
+ 'Circle',
+ 'Line',
+ 'Straight line',
+ 'Square',
+ 'Ellipse',
+ 'Triangle'
   
 ];
 

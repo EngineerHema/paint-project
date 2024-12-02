@@ -191,10 +191,16 @@ const handleDelete = async () => {
 };
   ////////////////////////////////////////////
   useEffect(() => {
-    if (selectedShape &&  transformerRef.current && shapeType.current === "_MODE_") {
+    if (selectedShape && transformerRef.current && shapeType.current === "_MODE_") {
       transformerRef.current.nodes([selectedShape]); // Apply transformer to selected shape
       transformerRef.current.getLayer().batchDraw();
       selectedShape.draggable(true);
+  
+     
+      selectedShape.on('transformend', () => {
+        console.log('Editing finished');
+
+      });
     } else if (transformerRef.current) {
       transformerRef.current.nodes([]); 
       transformerRef.current.getLayer().batchDraw();
@@ -202,6 +208,14 @@ const handleDelete = async () => {
     } else if (shapeType.current !== "_MODE_") {
       selectedShape && selectedShape.draggable(false);
     }
+  
+    // Cleanup the event listener when the component is unmounted or when selectedShape changes
+    return () => {
+      if (selectedShape) {
+        selectedShape.off('transformend');
+      }
+    };
+  
   }, [selectedShape, shapeType]);
 
  //////////////////////////////////////////////////
